@@ -47,13 +47,6 @@ onMounted(() => {
   // ADD RECTICLE
   addRecticle();
 
-  const box = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshStandardMaterial({ color: 0x00ff00 })
-  );
-  scene.add(box);
-
-
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   directionalLight.position.set(0, 1, 1);
   scene.add(directionalLight);
@@ -95,7 +88,6 @@ onMounted(() => {
       }
     }
     // ROTATE BOX BY ELAPSED TIME
-    box.rotation.y += 0.01;
     renderer.render(scene, camera);
   }
   renderer.setAnimationLoop(animate);
