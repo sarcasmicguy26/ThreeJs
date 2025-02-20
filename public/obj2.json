@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "version": 4.5,
+    "type": "Object",
+    "generator": "Custom"
+  },
+  "geometries": [
+    {
+      "uuid": "cube-geometry",
+      "type": "BoxGeometry",
+      "width": 2,
+      "height": 2,
+      "depth": 2
+    },
+    {
+      "uuid": "ground-geometry",
+      "type": "BoxGeometry",
+      "width": 10,
+      "height": 1,
+      "depth": 10
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "cube-material",
+      "type": "MeshStandardMaterial",
+      "color": 16711680
+    },
+    {
+      "uuid": "ground-material",
+      "type": "MeshStandardMaterial",
+      "color": 11184810
+    }
+  ],
+  "object": {
+    "uuid": "scene-root",
+    "type": "Group",
+    "children": [
+      {
+        "uuid": "ground",
+        "type": "Mesh",
+        "geometry": "ground-geometry",
+        "material": "ground-material",
+        "position": [0, 0, 0],
+        "receiveShadow": true
+      },
+      {
+        "uuid": "ambient-light",
+        "type": "AmbientLight",
+        "color": 16777215,
+        "intensity": 0.5
+      },
+      {
+        "uuid": "directional-light",
+        "type": "DirectionalLight",
+        "color": 16777215,
+        "intensity": 1,
+        "position": [5, 10, 5],
+        "castShadow": true,
+        "shadow": {
+          "mapSize": [1024, 1024],
+          "camera": {
+            "type": "OrthographicCamera",
+            "near": 0.5,
+            "far": 50,
+            "left": -10,
+            "right": 10,
+            "top": 10,
+            "bottom": -10
+          }
+        }
+      }
+    ]
+  }
+}
