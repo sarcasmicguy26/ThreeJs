@@ -41,7 +41,9 @@ onMounted(() => {
   // ENABLE AR/VR
   renderer.xr.enabled = true;
   document.body.appendChild(ARButton.createButton(renderer, {
-    requiredFeatures: ["hit-test"]
+    requiredFeatures: ["hit-test"],
+    optionalFeatures: ["dom-overlay"],
+    domOverlay: { root: document.body }
   }));
 
   // ADD RECTICLE
@@ -99,15 +101,18 @@ onMounted(() => {
 
   const rxController = renderer.xr.getController(0);
   rxController.addEventListener('select', onSelect);
-});
 
-function onSelect() {
-  const box = new THREE.Mesh(
+  box = new THREE.Mesh(
     new THREE.BoxGeometry(0.1, 0.1, 0.1),
     new THREE.MeshStandardMaterial({ color: 0xff0000 })
   );
-  box.position.set(0, 0, -0.5).applyMatrix4(recticle.matrix);
-  scene.add(box);
+});
+let box;
+function onSelect() {
+  const newBox = box.clone();
+  newBox.position.setFromMatrixPosition(recticle.matrix);
+
+  scene.add(newBox);
 }
 
 function addRecticle() {
