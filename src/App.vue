@@ -14,6 +14,9 @@ import {ARButton} from 'three/examples/jsm/webxr/ARButton.js';
 
 let controls;
 let scene;
+let recticle;
+let hitTestSource = null;
+let hitTestSourceRequested = false;
 // const gui = new GUI();
 onMounted(() => {
   const canvas = document.getElementById("canvas");
@@ -59,8 +62,38 @@ onMounted(() => {
   scene.add(ambientLight);
 
   // HANDLE RENDERE, ANIMATE, AND RESIZE
-  function animate() {
+  function animate(timestamp, frame) {
     controls.update();
+
+    if(frame) {
+      const referenceSpace = renderer.xr.getReferenceSpace();
+      const session = renderer.xr.getSession();
+
+      if(hitTestSourceRequested === false) {
+        session.requestReferenceSpace('viewer').then((referenceSpace) => {
+          session.requestHitTestSource({ space: referenceSpace }).then((source) => {
+            hitTestSource = source;
+          });
+        });
+        hitTestSourceRequested = true;
+
+        session.addEventListener('end', () => {
+          hitTestSourceRequested = false;
+          hitTestSource = null;
+        });
+      }
+
+      if(hitTestSource) {
+        const hitTestResults = frame.getHitTestResults(hitTestSource);
+        if(hitTestResults.length) {
+          const hit = hitTestResults[0];
+          recticle.visible = true;
+          recticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+        } else {
+          recticle.visible = false;
+        }
+      }
+    }
     // ROTATE BOX BY ELAPSED TIME
     box.rotation.y += 0.01;
     renderer.render(scene, camera);
@@ -71,10 +104,22 @@ onMounted(() => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
+
+  const rxController = renderer.xr.getController(0);
+  rxController.addEventListener('select', onSelect);
 });
 
+function onSelect() {
+  const box = new THREE.Mesh(
+    new THREE.BoxGeometry(0.1, 0.1, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0xff0000 })
+  );
+  box.position.set(0, 0, -0.5).applyMatrix4(recticle.matrix);
+  scene.add(box);
+}
+
 function addRecticle() {
-  const recticle = new THREE.Mesh(
+  recticle = new THREE.Mesh(
     new THREE.RingGeometry(0.15, 0.2, 32),
     new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
   );
