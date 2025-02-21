@@ -38,6 +38,9 @@ onMounted(() => {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
 
+  // PIXELATION RATIO
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
   // ENABLE AR/VR
   renderer.xr.enabled = true;
   document.body.appendChild(ARButton.createButton(renderer, {
